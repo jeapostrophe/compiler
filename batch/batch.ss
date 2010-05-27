@@ -95,7 +95,7 @@ Here's the idea:
   (string->symbol (regexp-replace #rx"\\.ss$" (path->string merged-source-name) "")))
 (eprintf "Modularizing into ~a~n" batch-modname)
 (define batch-mod
-  (wrap-in-kernel-module batch-modname top-lang-info top-self-modidx batch-alpha))
+  (wrap-in-kernel-module batch-modname batch-modname top-lang-info top-self-modidx batch-alpha))
 
 ;; Output
 (define batch-final batch-mod)

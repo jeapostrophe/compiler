@@ -83,7 +83,7 @@
       [(and cl (struct case-lam (name clauses)))
        (for-each (lambda (l) (build-graph! lhs l))
                  clauses)]
-      [(struct let-one (rhs body flonum?))
+      [(struct let-one (rhs body flonum? unused?))
        (build-graph! lhs rhs)
        (build-graph! lhs body)]
       [(and f (struct let-void (count boxes? body)))
@@ -218,8 +218,8 @@
       [(and cl (struct case-lam (name clauses)))
        (struct-copy case-lam cl
                     [clauses (map update clauses)])]
-      [(struct let-one (rhs body flonum?))
-       (make-let-one (update rhs) (update body) flonum?)] ; Q: is flonum? okay here?
+      [(struct let-one (rhs body flonum? unused?))
+       (make-let-one (update rhs) (update body) flonum? unused?)] ; Q: is flonum? okay here?
       [(and f (struct let-void (count boxes? body)))
        (struct-copy let-void f
                     [body (update body)])]

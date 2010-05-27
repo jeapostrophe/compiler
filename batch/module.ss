@@ -6,7 +6,7 @@
   (module-path-index-join `(quote ,s) #f))
 
 
-(define (wrap-in-kernel-module name lang-info self-modidx top)
+(define (wrap-in-kernel-module name srcname lang-info self-modidx top)
   (match top
     [(struct compilation-top (max-let-depth prefix form))
      (define-values (reqs new-forms)
@@ -16,7 +16,7 @@
      (make-compilation-top 
       0
       (make-prefix 0 (list #f) empty)
-      (make-mod name
+      (make-mod name srcname
                 (module-path-index-join #f #f)
                 prefix
                 empty ; provides
@@ -30,4 +30,4 @@
                 #t))]))
 
 (provide/contract
- [wrap-in-kernel-module (symbol? lang-info/c module-path-index? compilation-top? . -> . compilation-top?)])
+ [wrap-in-kernel-module (symbol? symbol? lang-info/c module-path-index? compilation-top? . -> . compilation-top?)])

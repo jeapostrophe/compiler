@@ -33,8 +33,8 @@
          (map update clauses))
        (struct-copy case-lam cl
                     [clauses new-clauses])]
-      [(struct let-one (rhs body flonum?))
-       (make-let-one (update rhs) (update body) flonum?)] ; Q: is it okay to just pass in the old value for flonum?
+      [(struct let-one (rhs body flonum? unused?))
+       (make-let-one (update rhs) (update body) flonum? unused?)] ; Q: is it okay to just pass in the old value for flonum?
       [(and f (struct let-void (count boxes? body)))
        (struct-copy let-void f
                     [body (update body)])]

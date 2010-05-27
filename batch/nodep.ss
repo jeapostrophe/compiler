@@ -94,7 +94,7 @@
 
 (define (nodep-module mod-form phase)
   (match mod-form
-    [(struct mod (name self-modidx prefix provides requires body syntax-body unexported max-let-depth dummy lang-info internal-context))
+    [(struct mod (name srcname self-modidx prefix provides requires body syntax-body unexported max-let-depth dummy lang-info internal-context))
      (define new-prefix prefix)
      ; Cache all the mpi paths
      (for-each (match-lambda
@@ -109,7 +109,7 @@
              (append (requires->modlist requires phase)
                      (if (and phase (zero? phase))
                          (begin (eprintf "[~S] lang-info : ~S~n" name lang-info) ; XXX Seems to always be #f now
-                                (list (make-mod name self-modidx new-prefix provides requires body empty
+                                (list (make-mod name srcname self-modidx new-prefix provides requires body empty
                                                 unexported max-let-depth dummy lang-info internal-context)))
                          (begin (eprintf "[~S] Dropping module @ ~S~n" name phase)
                                 empty))))]              
