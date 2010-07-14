@@ -47,10 +47,17 @@ Here's the idea:
          "alpha.ss"
          "module.ss"
          compiler/decompile
-         compiler/zo-marshal)
+         compiler/zo-marshal
+         racket/set)
 
+(define excluded-modules (make-parameter (set)))
 (define file-to-batch
-  (command-line #:program "batch" #:args (filename) filename))
+  (command-line #:program "batch" 
+                #:multi
+                [("-e" "--exclude-modules") mod
+                                            "Exclude a module from being batched"
+                                            (excluded-modules (set-add (excluded-modules) mod))]
+                #:args (filename) filename))
 
 (define-values (base name dir?) (split-path file-to-batch))
 (when (or (eq? base #f) dir?)
@@ -67,17 +74,17 @@ Here's the idea:
   (delete-file compiled-zo-path))
 
 (eprintf "Compiling module~n")
-(void (system (format "mzc ~a" file-to-batch))) 
+(void (system (format "raco make ~a" file-to-batch))) 
 
 
-(define merged-source-path (path-add-suffix file-to-batch #".merged.ss"))
+(define merged-source-path (path-add-suffix file-to-batch #".merged.rkt"))
 (define-values (merged-source-base merged-source-name _1) (split-path merged-source-path))
 (define merged-zo-path (build-compiled-path merged-source-base (path-add-suffix merged-source-name #".zo")))
 
 ;; Transformations
 (eprintf "Removing dependencies~n")
 (define-values (batch-nodep top-lang-info top-self-modidx)
-  (nodep-file file-to-batch))
+  (nodep-file file-to-batch (excluded-modules)))
 
 (eprintf "Merging modules~n")
 (define batch-merge
@@ -116,7 +123,7 @@ Here's the idea:
    #:exists 'replace))
 
 (eprintf "Running merged source~n")
-#;(void (system (format "mzscheme ~a" merged-source-path)))
+(void (system* (find-executable-path "racket") (path->string merged-source-path)))
 
 
 

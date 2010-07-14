@@ -2,8 +2,10 @@
 (require compiler/zo-parse
          "util.ss")
 
-(define (symbol->module-path-index s)
-  (module-path-index-join `(quote ,s) #f))
+(define (->module-path-index s)
+  (if (module-path-index? s)
+      s
+      (module-path-index-join `(quote ,s) #f)))
 
 
 (define (wrap-in-kernel-module name srcname lang-info self-modidx top)
@@ -12,12 +14,12 @@
      (define-values (reqs new-forms)
        (partition req? (splice-forms form)))
      (define requires
-       (map (compose symbol->module-path-index syntax->datum req-reqs) reqs))
+       (map (compose ->module-path-index syntax->datum req-reqs) reqs))
      (make-compilation-top 
       0
       (make-prefix 0 (list #f) empty)
       (make-mod name srcname
-                (module-path-index-join #f #f)
+                self-modidx
                 prefix
                 empty ; provides
                 (list (cons 0 requires))

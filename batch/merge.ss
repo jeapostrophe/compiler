@@ -85,6 +85,10 @@
             (values (add1 i)
                     (list* tl new-toplevels)
                     (list* (+ i toplevel-offset) remap))]
+           [(module-path-index? rw)
+            (values (add1 i)
+                    (list* tl new-toplevels)
+                    (list* (+ i toplevel-offset) remap))]
            [(modvar-rewrite? rw)
             (values i
                     new-toplevels

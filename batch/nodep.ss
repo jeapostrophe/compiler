@@ -1,9 +1,13 @@
 #lang scheme
 (require compiler/zo-parse
          "util.ss"
-         "mpi.ss")
+         "mpi.ss"
+         racket/set)
 
-(define (nodep-file file-to-batch)  
+(define excluded-modules (make-parameter null))
+
+(define (nodep-file file-to-batch excluded)  
+  (excluded-modules excluded)
   (match (get-nodep-module-code/path file-to-batch 0)
     [(struct @phase (_ (struct module-code (modvar-rewrite lang-info ctop))))
      (values ctop lang-info (modvar-rewrite-modidx modvar-rewrite))]))
@@ -11,14 +15,21 @@
 (define (path->comp-top pth)
   (call-with-input-file pth zo-parse))
 
+(define (excluded? pth)
+  (set-member? (excluded-modules) (path->string pth)))
+
 (define MODULE-IDX-MAP (make-hash))
 (define (get-nodep-module-code/index mpi phase)
   (define pth (mpi->path! mpi))
-  (if (symbol? pth) ; For internal things like #%paramz
-      (begin
-        (hash-set! MODULE-IDX-MAP pth pth)
-        pth)
-      (get-nodep-module-code/path pth phase)))
+  (cond
+    [(symbol? pth)
+     (hash-set! MODULE-IDX-MAP pth pth)
+     pth]
+    [(excluded? pth)
+     (hash-set! MODULE-IDX-MAP pth mpi)
+     mpi]
+    [else
+     (get-nodep-module-code/path pth phase)]))
 (define (get-modvar-rewrite modidx)
   (define pth (mpi->path* modidx))
   (hash-ref MODULE-IDX-MAP pth
@@ -146,6 +157,12 @@
          (begin
            (hash-set! REQUIRED ct #t)
            (list (make-req (datum->syntax #f ct) (make-toplevel 0 0 #f #f)))))]
+    [(module-path-index? ct)
+     (if (hash-has-key? REQUIRED ct)
+         empty
+         (begin
+           (hash-set! REQUIRED ct #t)
+           (list (make-req (datum->syntax #f ct) (make-toplevel 0 0 #f #f)))))]
     [(not ct)
      empty]
     [(@phase? ct)
@@ -157,5 +174,5 @@
  [struct modvar-rewrite 
          ([modidx module-path-index?]
           [provide->toplevel (symbol? exact-nonnegative-integer? . -> . exact-nonnegative-integer?)])]
- [get-modvar-rewrite (module-path-index? . -> . (or/c symbol? modvar-rewrite?))]
- [nodep-file (path-string? . -> . (values compilation-top? lang-info/c module-path-index?))])
+ [get-modvar-rewrite (module-path-index? . -> . (or/c symbol? modvar-rewrite? module-path-index?))]
+ [nodep-file (path-string? set? . -> . (values compilation-top? lang-info/c module-path-index?))])
