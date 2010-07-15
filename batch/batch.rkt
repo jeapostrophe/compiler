@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 #|
 Here's the idea:
 
@@ -38,14 +38,14 @@ Here's the idea:
 - Then, it will pay to do dead code elimination and inlining, etc.
 |#
 
-(require scheme/pretty
-         scheme/system
-         "util.ss"
-         "nodep.ss"
-         "merge.ss"
-         "gc-toplevels.ss"
-         "alpha.ss"
-         "module.ss"
+(require racket/pretty
+         racket/system
+         "util.rkt"
+         "nodep.rkt"
+         "merge.rkt"
+         "gc-toplevels.rkt"
+         "alpha.rkt"
+         "module.rkt"
          compiler/decompile
          compiler/zo-marshal
          racket/set)
@@ -65,16 +65,14 @@ Here's the idea:
 
 
 ;; Compile 
-(eprintf "Removing existing zo file~n")
-(define compiled-zo-path (build-compiled-path base (path-add-suffix name #".zo")))
+#;(eprintf "Removing existing zo file~n")
+#;(define compiled-zo-path (build-compiled-path base (path-add-suffix name #".zo")))
 
-
-#;
-(when (file-exists? compiled-zo-path)
-  (delete-file compiled-zo-path))
+#;(when (file-exists? compiled-zo-path)
+    (delete-file compiled-zo-path))
 
 (eprintf "Compiling module~n")
-(void (system (format "raco make ~a" file-to-batch))) 
+(void (system* (find-executable-path "raco") "make" file-to-batch)) 
 
 
 (define merged-source-path (path-add-suffix file-to-batch #".merged.rkt"))
@@ -99,7 +97,7 @@ Here's the idea:
   (alpha-vary-ctop batch-gcd))
 
 (define batch-modname
-  (string->symbol (regexp-replace #rx"\\.ss$" (path->string merged-source-name) "")))
+  (string->symbol (regexp-replace #rx"\\.rkt$" (path->string merged-source-name) "")))
 (eprintf "Modularizing into ~a~n" batch-modname)
 (define batch-mod
   (wrap-in-kernel-module batch-modname batch-modname top-lang-info top-self-modidx batch-alpha))

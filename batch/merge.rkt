@@ -1,9 +1,9 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse
-         "util.ss"
-         "mpi.ss"
-         "nodep.ss"
-         "update-toplevels.ss")
+         "util.rkt"
+         "mpi.rkt"
+         "nodep.rkt"
+         "update-toplevels.rkt")
 
 (define MODULE-TOPLEVEL-OFFSETS (make-hash))
 

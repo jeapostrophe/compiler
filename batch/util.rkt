@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse)
 
 (define (prefix-syntax-start pre)

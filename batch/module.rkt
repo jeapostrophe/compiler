@@ -1,6 +1,6 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse
-         "util.ss")
+         "util.rkt")
 
 (define (->module-path-index s)
   (if (module-path-index? s)

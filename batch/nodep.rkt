@@ -1,7 +1,7 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse
-         "util.ss"
-         "mpi.ss"
+         "util.rkt"
+         "mpi.rkt"
          racket/set)
 
 (define excluded-modules (make-parameter null))

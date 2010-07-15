@@ -1,6 +1,6 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse
-         "util.ss")
+         "util.rkt")
 
 (define (update-toplevels toplevel-updater topsyntax-updater topsyntax-new-midpt)
   (define (inner-update form)

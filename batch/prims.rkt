@@ -1,6 +1,6 @@
-#lang scheme
-(require scheme/set
-         schemeunit
+#lang racket
+(require racket/set
+         rackunit
          compiler/decompile
          compiler/zo-parse)
 (require/expose compiler/decompile

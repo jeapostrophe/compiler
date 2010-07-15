@@ -1,6 +1,6 @@
-#lang scheme
+#lang racket
 (require compiler/zo-parse
-         "util.ss")
+         "util.rkt")
 
 ; XXX Use efficient set structure
 (define (gc-toplevels top)
